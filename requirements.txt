@@ -1,0 +1,3 @@
+discord
+gpt4all
+python-dotenv
