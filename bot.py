@@ -24,16 +24,16 @@ def generate_line(gpt, prompt, stops={'\n'}, **kwargs):
     gpt.model.generate(prompt, streaming=True, **kwargs)
     return ''.join(words).strip()
 
-def luciusreplies(msg, author = 'human'):
+def luciusreplies(msg, author = 'human', n_predict = 1024, temp = 1.5, intro = 'A cold and callous Roman Dictator'):
     prompt = f'''
 {author}:
 {msg}
 
-Lucius (Roman Dictator): 
+Lucius ({intro}): 
 '''
     print(prompt)
 
-    response = generate_line(gpt, prompt, n_predict = 500, temp = .5)
+    response = generate_line(gpt, prompt, n_predict = n_predict, temp = temp)
     return response
 
 
@@ -61,11 +61,26 @@ TOKEN = os.getenv('DISCORD_TOKEN')
 bot=discord.Bot()
 
 @bot.slash_command(name = 'question', description = 'Ask Lucius Bot a question')
-async def question(ctx, query:discord.Option(str, description = 'The question to be asked')):
+async def question(
+        ctx,
+        query: discord.Option(str, description = 'The question to be asked'),
+        mood: discord.Option(str, choices = ['Emo', 'Angry', 'Serious', 'Sad']),
+        ):
     await ctx.defer()
-    response = luciusreplies(query, author=ctx.author.display_name)
+    if mood == 'Angry':
+        response = luciusreplies(query, author=ctx.author.display_name, temp = 5.0, intro = 'A furious and angry Roman Dictator')
+    elif mood == 'Emo':
+        response = luciusreplies(query, author=ctx.author.display_name, temp = 3.0, intro = 'An emo and silly Roman Dictator')
+    elif mood == 'Sad':
+        response = luciusreplies(query, author=ctx.author.display_name, temp = 2.0, intro = 'A sad and depressed Roman Dictator')
+    elif mood == 'Serious':
+        response = luciusreplies(query, author=ctx.author.display_name, temp = 0.5, intro = 'A super serious Roman Dictator')
+    else:
+        response = luciusreplies(query, author=ctx.author.display_name)
+
+    response2 = f'> {query}\n\n{response}'
     # response = 'testing'
-    await ctx.followup.send(response)
+    await ctx.followup.send(response2)
 
 
 @bot.command(name='99', help='Salve Consul, here is my help menu')
