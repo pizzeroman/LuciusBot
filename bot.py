@@ -55,10 +55,17 @@ load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
 
-from discord.ext import commands
-bot = commands.Bot(command_prefix='%',intents=discord.Intents.all())
+# from discord.ext import commands
+# bot = commands.Bot(command_prefix='%',intents=discord.Intents.all())
 
+bot=discord.Bot()
 
+@bot.slash_command(name = 'question', description = 'Ask Lucius Bot a question')
+async def question(ctx, query:discord.Option(str, description = 'The question to be asked')):
+    await ctx.defer()
+    response = luciusreplies(query, author=ctx.author.display_name)
+    # response = 'testing'
+    await ctx.followup.send(response)
 
 
 @bot.command(name='99', help='Salve Consul, here is my help menu')
@@ -70,9 +77,9 @@ async def nine_nine(ctx):
 async def hello(ctx):
     await ctx.send(f'Hello master.')
 
-@bot.hybrid_command()
-async def test(ctx):
-    await ctx.send("this is a hybrid command!")
+# @bot.hybrid_command()
+# async def test(ctx):
+#     await ctx.send("this is a hybrid command!")
     
 
 @bot.command(name='say')

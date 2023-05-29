@@ -1,3 +1,3 @@
-discord
+py-cord
 gpt4all
 python-dotenv
