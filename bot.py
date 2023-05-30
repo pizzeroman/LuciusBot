@@ -10,6 +10,7 @@ import os
 import gpt4all
 modelpath = 'C:/Users/Derek/AppData/Local/nomic.ai/GPT4All/'
 modelname = 'ggml-mpt-7b-chat'
+# modelname = 'ggml-gpt4all-l13b-snoozy'
 
 gpt = gpt4all.GPT4All(modelname, modelpath)
 
@@ -65,16 +66,18 @@ async def question(
         ctx,
         query: discord.Option(str, description = 'The question to be asked'),
         mood: discord.Option(str, choices = ['Emo', 'Angry', 'Serious', 'Sad']),
+        insanity: discord.Option(float, choices = [0.1, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0]),
+
         ):
     await ctx.defer()
     if mood == 'Angry':
-        response = luciusreplies(query, author=ctx.author.display_name, temp = 5.0, intro = 'A furious and angry Roman Dictator')
+        response = luciusreplies(query, author=ctx.author.display_name, temp = insanity, intro = 'A furious and angry Roman Dictator')
     elif mood == 'Emo':
-        response = luciusreplies(query, author=ctx.author.display_name, temp = 3.0, intro = 'An emo and silly Roman Dictator')
+        response = luciusreplies(query, author=ctx.author.display_name, temp = insanity, intro = 'An emo and silly Roman Dictator')
     elif mood == 'Sad':
-        response = luciusreplies(query, author=ctx.author.display_name, temp = 2.0, intro = 'A sad and depressed Roman Dictator')
+        response = luciusreplies(query, author=ctx.author.display_name, temp = insanity, intro = 'A sad and depressed Roman Dictator')
     elif mood == 'Serious':
-        response = luciusreplies(query, author=ctx.author.display_name, temp = 0.5, intro = 'A super serious Roman Dictator')
+        response = luciusreplies(query, author=ctx.author.display_name, temp = insanity, intro = 'A super serious Roman Dictator')
     else:
         response = luciusreplies(query, author=ctx.author.display_name)
 
