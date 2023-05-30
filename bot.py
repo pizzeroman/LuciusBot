@@ -10,6 +10,7 @@ import os
 import gpt4all
 modelpath = 'C:/Users/Derek/AppData/Local/nomic.ai/GPT4All/'
 modelname = 'ggml-mpt-7b-chat'
+# modelname = 'ggml-gpt4all-l13b-snoozy'
 
 gpt = gpt4all.GPT4All(modelname, modelpath)
 
@@ -24,16 +25,16 @@ def generate_line(gpt, prompt, stops={'\n'}, **kwargs):
     gpt.model.generate(prompt, streaming=True, **kwargs)
     return ''.join(words).strip()
 
-def luciusreplies(msg, author = 'human'):
+def luciusreplies(msg, author = 'human', n_predict = 1024, temp = 1.5, intro = 'A cold and callous Roman Dictator'):
     prompt = f'''
 {author}:
 {msg}
 
-Lucius (Roman Dictator): 
+Lucius ({intro}): 
 '''
     print(prompt)
 
-    response = generate_line(gpt, prompt, n_predict = 500, temp = .5)
+    response = generate_line(gpt, prompt, n_predict = n_predict, temp = temp)
     return response
 
 
@@ -55,10 +56,34 @@ load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
 
-from discord.ext import commands
-bot = commands.Bot(command_prefix='%',intents=discord.Intents.all())
+# from discord.ext import commands
+# bot = commands.Bot(command_prefix='%',intents=discord.Intents.all())
 
+bot=discord.Bot()
 
+@bot.slash_command(name = 'question', description = 'Ask Lucius Bot a question')
+async def question(
+        ctx,
+        query: discord.Option(str, description = 'The question to be asked'),
+        mood: discord.Option(str, choices = ['Emo', 'Angry', 'Serious', 'Sad']),
+        insanity: discord.Option(float, choices = [0.1, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0]),
+
+        ):
+    await ctx.defer()
+    if mood == 'Angry':
+        response = luciusreplies(query, author=ctx.author.display_name, temp = insanity, intro = 'A furious and angry Roman Dictator')
+    elif mood == 'Emo':
+        response = luciusreplies(query, author=ctx.author.display_name, temp = insanity, intro = 'An emo and silly Roman Dictator')
+    elif mood == 'Sad':
+        response = luciusreplies(query, author=ctx.author.display_name, temp = insanity, intro = 'A sad and depressed Roman Dictator')
+    elif mood == 'Serious':
+        response = luciusreplies(query, author=ctx.author.display_name, temp = insanity, intro = 'A super serious Roman Dictator')
+    else:
+        response = luciusreplies(query, author=ctx.author.display_name)
+
+    response2 = f'> {query}\n\n{response}'
+    # response = 'testing'
+    await ctx.followup.send(response2)
 
 
 @bot.command(name='99', help='Salve Consul, here is my help menu')
@@ -70,9 +95,9 @@ async def nine_nine(ctx):
 async def hello(ctx):
     await ctx.send(f'Hello master.')
 
-@bot.hybrid_command()
-async def test(ctx):
-    await ctx.send("this is a hybrid command!")
+# @bot.hybrid_command()
+# async def test(ctx):
+#     await ctx.send("this is a hybrid command!")
     
 
 @bot.command(name='say')
