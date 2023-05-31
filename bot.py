@@ -59,7 +59,7 @@ TOKEN = os.getenv('DISCORD_TOKEN')
 # from discord.ext import commands
 # bot = commands.Bot(command_prefix='%',intents=discord.Intents.all())
 
-bot=discord.Bot()
+bot=discord.Bot(command_prefix='%')
 
 @bot.slash_command(name = 'question', description = 'Ask Lucius Bot a question')
 async def question(
