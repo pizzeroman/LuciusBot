@@ -25,7 +25,7 @@ def generate_line(gpt, prompt, stops={'\n'}, **kwargs):
     gpt.model.generate(prompt, streaming=True, **kwargs)
     return ''.join(words).strip()
 
-def luciusreplies(msg, author = 'human', n_predict = 1024, temp = 1.5, intro = 'A cold and callous Roman Dictator'):
+def luciusreplies(msg, author = 'human', n_predict = 5120, temp = 1.5, intro = 'A cold and callous Roman Dictator'):
     prompt = f'''
 {author}:
 {msg}
@@ -94,6 +94,13 @@ async def nine_nine(ctx):
 @bot.command(name='hello')
 async def hello(ctx):
     await ctx.send(f'Hello master.')
+
+@bot.command()
+async def mycommand(ctx):
+    async with ctx.typing():
+        # do expensive stuff here
+        await asyncio.sleep(10)
+    await ctx.send('done!')
 
 # @bot.hybrid_command()
 # async def test(ctx):
